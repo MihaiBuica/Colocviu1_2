@@ -8,4 +8,7 @@ public interface Constants {
     String SECOND_RETURN_KEY = "sum";
     String MAIN = "main";
     String CALCULATED_SUM = "totalsum";
+    String PROCESSING_THREAD_TAG = "thread";
+    String ACTIONTYPE = "ro.pub.cs.systems.eim.practicaltest01.sum";
+    String BROADCAST_RECEIVER_EXTRA = "brodcastmessage";
 }

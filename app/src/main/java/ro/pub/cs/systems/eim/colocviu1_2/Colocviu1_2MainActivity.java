@@ -2,7 +2,10 @@ package ro.pub.cs.systems.eim.colocviu1_2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,11 +22,21 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     EditText nextTermEditText;
     TextView allTermsTextViw;
 
+    private IntentFilter intentFilter = new IntentFilter();
+
     String displayText = "";
     String oldDisplayText = "";
     int totalSum = 0;
     int []sumArray;
     int idx = 0;
+
+    private MessageBroadcastReceiver messageBroadcastReceiver = new MessageBroadcastReceiver();
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(Constants.MAIN, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
+        }
+    }
 
     GenericButtonListener buttonListener = new GenericButtonListener();
     private class GenericButtonListener implements View.OnClickListener {
@@ -79,6 +92,13 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "The sum is: " + totalSum, Toast.LENGTH_LONG).show();
             }
         }
+        if (totalSum >= 10)
+        {
+            Toast.makeText(getApplicationContext(), "Service started", Toast.LENGTH_LONG).show();
+            Intent intentService = new Intent(getApplicationContext(), Colocviu1_2Service.class);
+            intentService.putExtra(Constants.CALCULATED_SUM, totalSum);
+            getApplicationContext().startService(intentService);
+        }
 
     }
     void init() {
@@ -97,6 +117,21 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_2_main);
         init();
+        intentFilter.addAction(Constants.ACTIONTYPE);
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(Constants.MAIN, "onResume() method was invoked");
+        super.onResume();
+        registerReceiver(messageBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(Constants.MAIN, "onPause() method was invoked");
+        unregisterReceiver(messageBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -113,4 +148,13 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
             Log.d(Constants.MAIN, "Current sum: " + totalSum);
         }
     }
-}
+
+    @Override
+    protected void onDestroy() {
+        Log.d(Constants.MAIN, "onDestroy() method was invoked");
+        Intent intent = new Intent(getApplicationContext(), Colocviu1_2Service.class);
+        stopService(intent);
+        super.onDestroy();
+    }
+
+    }
