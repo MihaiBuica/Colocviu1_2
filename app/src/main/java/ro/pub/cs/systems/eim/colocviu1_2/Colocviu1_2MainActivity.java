@@ -35,6 +35,9 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(Constants.MAIN, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
+            String str = intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA);
+            Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();
+
         }
     }
 
