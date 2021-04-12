@@ -20,6 +20,7 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     TextView allTermsTextViw;
 
     String displayText = "";
+    String oldDisplayText = "";
     int totalSum = 0;
     int []sumArray;
     int idx = 0;
@@ -40,7 +41,7 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
                     {
                         displayText = displayText + " + " + nextTermEditText.getText().toString();
                     }
-                    totalSum += Integer.valueOf(nextTermEditText.getText().toString());
+//                    totalSum += Integer.valueOf(nextTermEditText.getText().toString());
 
                     sumArray[idx++] = Integer.valueOf(nextTermEditText.getText().toString());
                     allTermsTextViw.setText(displayText);
@@ -50,10 +51,18 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
             }
             if (v.getId() == R.id.compute_button)
             {
-                Intent intent = new Intent(getApplicationContext(), Colocviu1_2SecondaryActivity.class);
-                intent.putExtra(Constants.VALUES_OF_SUM, sumArray);
-                intent.putExtra(Constants.NUM_VALUES, idx);
-                startActivityForResult(intent, Constants.REQUEST_CODE);
+                if (oldDisplayText.equals(displayText))
+                {
+                    Toast.makeText(getApplicationContext(), "Sum is already calculated: " + totalSum, Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Intent intent = new Intent(getApplicationContext(), Colocviu1_2SecondaryActivity.class);
+                    intent.putExtra(Constants.VALUES_OF_SUM, sumArray);
+                    intent.putExtra(Constants.NUM_VALUES, idx);
+                    startActivityForResult(intent, Constants.REQUEST_CODE);
+                }
+                oldDisplayText = displayText;
             }
         }
     }
@@ -66,8 +75,8 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
             if (intent != null)
             {
                 Log.d(Constants.MAIN, "Message found");
-                int sumResult = intent.getIntExtra(Constants.SECOND_RETURN_KEY, -1);
-                Toast.makeText(this, "The sum is: " + sumResult, Toast.LENGTH_LONG).show();
+                totalSum = intent.getIntExtra(Constants.SECOND_RETURN_KEY, -1);
+                Toast.makeText(this, "The sum is: " + totalSum, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -84,8 +93,24 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(Constants.MAIN, "onCreate() method was invoked");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_2_main);
         init();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(Constants.MAIN, "onSAveInstanceState() method was invoked");
+        savedInstanceState.putInt(Constants.CALCULATED_SUM, totalSum);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(Constants.MAIN, "onRestoreInstanceState() method was invoked");
+        if (savedInstanceState.containsKey(Constants.CALCULATED_SUM)){
+            totalSum = savedInstanceState.getInt(Constants.CALCULATED_SUM, -1);
+            Log.d(Constants.MAIN, "Current sum: " + totalSum);
+        }
     }
 }

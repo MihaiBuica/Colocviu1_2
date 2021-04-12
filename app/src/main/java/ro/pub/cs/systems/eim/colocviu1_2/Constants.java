@@ -7,4 +7,5 @@ public interface Constants {
     String NUM_VALUES = "numofvalues";
     String SECOND_RETURN_KEY = "sum";
     String MAIN = "main";
+    String CALCULATED_SUM = "totalsum";
 }
